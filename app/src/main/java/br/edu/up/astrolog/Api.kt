@@ -5,14 +5,29 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-// API pública Open-Meteo (sem chave): condições do céu em tempo real e geocodificação
+// =========================================================================
+// REQUISITO: CONSUMO DE API (Retrofit + Gson)
+// Utilizamos a API pública Open-Meteo (não precisa de chave de API).
+// 1. ClimaApi: busca cobertura de nuvens (%) e temperatura (°C) pelas coordenadas.
+// 2. GeoApi: busca latitude e longitude pelo nome da cidade (Geocodificação).
+// =========================================================================
+
+// Modelos de dados (Data Classes) que recebem o JSON da API de Clima
 data class ClimaResposta(val current: ClimaAtual)
 data class ClimaAtual(val cloud_cover: Int, val temperature_2m: Double)
 
+// Modelos de dados que recebem o JSON da API de Geocodificação (busca por cidade)
 data class GeoResposta(val results: List<GeoLocal>?)
-data class GeoLocal(val name: String, val latitude: Double, val longitude: Double, val admin1: String?)
+data class GeoLocal(
+    val name: String,
+    val latitude: Double,
+    val longitude: Double,
+    val admin1: String? // Estado / Região (ex: Paraná)
+)
 
+// Interface do Retrofit: define os endpoints HTTP GET
 interface ClimaApi {
+    // Exemplo de chamada: https://api.open-meteo.com/v1/forecast?latitude=-25.42&longitude=-49.27&current=cloud_cover,temperature_2m
     @GET("v1/forecast")
     suspend fun clima(
         @Query("latitude") lat: Double,
@@ -22,6 +37,7 @@ interface ClimaApi {
 }
 
 interface GeoApi {
+    // Exemplo de chamada: https://geocoding-api.open-meteo.com/v1/search?name=Curitiba&count=1&language=pt
     @GET("v1/search")
     suspend fun buscarCidade(
         @Query("name") nome: String,
@@ -30,11 +46,12 @@ interface GeoApi {
     ): GeoResposta
 }
 
+// Singleton (object) que cria e fornece as instâncias do Retrofit sob demanda (by lazy)
 object RetrofitClient {
     val api: ClimaApi by lazy {
         Retrofit.Builder()
             .baseUrl("https://api.open-meteo.com/")
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create()) // Converte JSON para Data Class
             .build()
             .create(ClimaApi::class.java)
     }
