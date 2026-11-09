@@ -69,7 +69,6 @@ fun AstroApp(vm: AstroViewModel = viewModel()) {
     }
 }
 
-// ---------- Compartilhamento com outros apps instalados (WhatsApp, e-mail, etc.) ----------
 fun compartilhar(ctx: Context, o: Observacao, local: String) {
     val textoClima = if (o.condicaoCeu.isNotBlank()) "\n${o.condicaoCeu}" else ""
     val textoNotas = if (o.notas.isNotBlank()) "\n📝 ${o.notas}" else ""
@@ -84,7 +83,6 @@ fun compartilhar(ctx: Context, o: Observacao, local: String) {
     ctx.startActivity(Intent.createChooser(i, "Compartilhar observação"))
 }
 
-// ====================== LOCAIS ======================
 @Composable
 fun LocaisTela(
     locais: List<Local>,
@@ -94,7 +92,6 @@ fun LocaisTela(
     onSalvar: (Local) -> Unit,
     onExcluir: (Local) -> Unit
 ) {
-    // null = fechado, -1 = novo, outro = id em edição (sobrevive à rotação de tela)
     var editId by rememberSaveable { mutableStateOf<Long?>(null) }
     var deleteId by rememberSaveable { mutableStateOf<Long?>(null) }
 
@@ -107,7 +104,6 @@ fun LocaisTela(
         }
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            // bottom = 88.dp evita sobreposição do FloatingActionButton sobre o último item
             contentPadding = PaddingValues(start = 12.dp, top = 12.dp, end = 12.dp, bottom = 88.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -272,7 +268,6 @@ fun LocalDialog(
     )
 }
 
-// ====================== OBSERVAÇÕES ======================
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ObservacoesTela(
@@ -331,7 +326,6 @@ fun ObservacoesTela(
                 }
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    // bottom = 88.dp evita sobreposição do FloatingActionButton sobre o último item
                     contentPadding = PaddingValues(start = 12.dp, top = 4.dp, end = 12.dp, bottom = 88.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
